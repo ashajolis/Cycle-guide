@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cycle Life Guide</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cycle Guide">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0b08;
+  --surface: #1a1510;
+  --surface2: #221c15;
+  --card: #2a221a;
+  --border: rgba(255,255,255,0.07);
+  --text: #f0e8dc;
+  --muted: #9a8a78;
+  --accent: #c9a96e;
+
+  --m: #c2185b; --m-glow: rgba(194,24,91,0.2); --m-soft: rgba(194,24,91,0.1);
+  --f: #8e6bbf; --f-glow: rgba(142,107,191,0.2); --f-soft: rgba(142,107,191,0.1);
+  --o: #d4894a; --o-glow: rgba(212,137,74,0.2); --o-soft: rgba(212,137,74,0.1);
+  --l: #4a9e8a; --l-glow: rgba(74,158,138,0.2); --l-soft: rgba(74,158,138,0.1);
+  --nest: #b8860b; --nest-glow: rgba(184,134,11,0.2); --nest-soft: rgba(184,134,11,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Jost',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+/* HEADER */
+header {
+  position:relative; padding:52px 20px 44px; text-align:center; overflow:hidden;
+}
+header::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 50% at 20% 60%, var(--m-glow), transparent),
+              radial-gradient(ellipse 50% 40% at 80% 30%, var(--f-glow), transparent),
+              radial-gradient(ellipse 40% 60% at 60% 80%, var(--l-glow), transparent);
+}
+.eyebrow { position:relative; font-size:0.63rem; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+header h1 { position:relative; font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,8vw,3.8rem); font-weight:700; line-height:1.1; }
+header h1 em { font-style:italic; color:var(--accent); }
+header .sub { position:relative; margin-top:12px; font-size:0.8rem; color:var(--muted); font-weight:300; line-height:1.6; }
+.cycle-bar { display:flex; margin:24px 20px 0; border-radius:40px; overflow:hidden; height:6px; gap:2px; }
+.cb-m{flex:4;background:var(--m);border-radius:40px 0 0 40px;}
+.cb-f{flex:7;background:var(--f);}
+.cb-o{flex:5;background:var(--o);}
+.cb-l{flex:9;background:var(--l);border-radius:0 40px 40px 0;}
+
+/* NAV */
+.nav-wrap { position:sticky; top:0; z-index:100; background:rgba(14,11,8,0.93); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 16px; }
+.nav-tabs { display:flex; overflow-x:auto; scrollbar-width:none; gap:4px; padding:10px 0; max-width:680px; margin:0 auto; }
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-btn { flex-shrink:0; padding:7px 14px; border:1px solid var(--border); border-radius:20px; background:transparent; color:var(--muted); font-family:'Jost',sans-serif; font-size:0.78rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.nav-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+.nav-btn.active-m{background:var(--m-soft);border-color:var(--m);color:#ff6b9d;}
+.nav-btn.active-f{background:var(--f-soft);border-color:var(--f);color:#c4a0ff;}
+.nav-btn.active-o{background:var(--o-soft);border-color:var(--o);color:#f4b87a;}
+.nav-btn.active-l{background:var(--l-soft);border-color:var(--l);color:#7dd4c0;}
+.nav-btn.active-n{background:var(--nest-soft);border-color:var(--nest);color:#e8c56a;}
+.nav-btn.active-r{background:rgba(201,169,110,0.1);border-color:var(--accent);color:var(--accent);}
+
+/* PAGES */
+.page{display:none;max-width:680px;margin:0 auto;padding:24px 16px 48px;animation:fadeUp 0.3s ease;}
+.page.visible{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* PHASE HERO */
+.phase-hero{border-radius:20px;padding:28px 24px;margin-bottom:20px;position:relative;overflow:hidden;border:1px solid var(--border);}
+.phase-hero::before{content:attr(data-glyph);position:absolute;right:-10px;bottom:-20px;font-size:8rem;opacity:0.12;line-height:1;pointer-events:none;}
+.hero-m{background:linear-gradient(135deg,var(--m-soft),transparent);border-color:rgba(194,24,91,0.25);}
+.hero-f{background:linear-gradient(135deg,var(--f-soft),transparent);border-color:rgba(142,107,191,0.25);}
+.hero-o{background:linear-gradient(135deg,var(--o-soft),transparent);border-color:rgba(212,137,74,0.25);}
+.hero-l{background:linear-gradient(135deg,var(--l-soft),transparent);border-color:rgba(74,158,138,0.25);}
+.hero-n{background:linear-gradient(135deg,var(--nest-soft),transparent);border-color:rgba(184,134,11,0.25);}
+.hero-tag{font-size:0.63rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.c-m{color:#ff6b9d;}.c-f{color:#c4a0ff;}.c-o{color:#f4b87a;}.c-l{color:#7dd4c0;}.c-n{color:#e8c56a;}.c-a{color:var(--accent);}
+.phase-hero h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;line-height:1.15;margin-bottom:10px;}
+.phase-hero p{font-size:0.84rem;line-height:1.7;color:var(--muted);max-width:90%;}
+
+/* SECTION LABEL */
+.slabel{font-size:0.62rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* RHYTHM BLOCKS — matching Roots app style */
+.rhythm-list { display:flex; flex-direction:column; gap:8px; }
+.rblock {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+.rblock-left-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+}
+.bar-m { background: var(--m); }
+.bar-f { background: var(--f); }
+.bar-o { background: var(--o); }
+.bar-l { background: var(--l); }
+.bar-n { background: var(--nest); }
+.bar-a { background: var(--accent); }
+
+.rblock-inner { padding: 14px 14px 14px 18px; }
+.rblock-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:5px; }
+.rblock-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:var(--text); }
+.rblock-badge {
+  font-size:0.58rem; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+  padding:3px 9px; border-radius:20px; flex-shrink:0; margin-top:2px;
+}
+.badge-anchor { background:var(--m-soft); color:#ff9dbf; border:1px solid rgba(194,24,91,0.3); }
+.badge-flex { background:var(--l-soft); color:#7dd4c0; border:1px solid rgba(74,158,138,0.3); }
+.badge-ugc { background:var(--o-soft); color:#f4b87a; border:1px solid rgba(212,137,74,0.3); }
+.badge-adapt { background:var(--nest-soft); color:#e8c56a; border:1px solid rgba(184,134,11,0.3); }
+
+.rblock-time { font-size:0.72rem; font-weight:600; color:var(--accent); margin-bottom:4px; letter-spacing:0.3px; }
+.rblock-desc { font-size:0.82rem; line-height:1.6; color:var(--muted); }
+.rblock-desc strong { color:var(--text); font-weight:500; }
+
+/* Phase note inside block */
+.phase-note {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.pn-item {
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.pn-item .pn-label { font-size:0.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:3px; }
+.pn-m { background:var(--m-soft); } .pn-m .pn-label { color:#ff6b9d; }
+.pn-f { background:var(--f-soft); } .pn-f .pn-label { color:#c4a0ff; }
+.pn-o { background:var(--o-soft); } .pn-o .pn-label { color:#f4b87a; }
+.pn-l { background:var(--l-soft); } .pn-l .pn-label { color:#7dd4c0; }
+.pn-n { background:var(--nest-soft); } .pn-n .pn-label { color:#e8c56a; }
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:10px;}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.card-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.ci-m{background:var(--m-soft);} .ci-f{background:var(--f-soft);} .ci-o{background:var(--o-soft);} .ci-l{background:var(--l-soft);} .ci-n{background:var(--nest-soft);} .ci-a{background:rgba(201,169,110,0.1);}
+.card-head h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--text);}
+
+ul.dot-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+ul.dot-list li{font-size:0.83rem;line-height:1.6;color:#b8a898;padding-left:16px;position:relative;}
+ul.dot-list li::before{content:'·';position:absolute;left:0;font-size:1.2rem;line-height:1.3;}
+.dot-m li::before{color:var(--m);} .dot-f li::before{color:var(--f);} .dot-o li::before{color:var(--o);} .dot-l li::before{color:var(--l);} .dot-n li::before{color:var(--nest);} .dot-a li::before{color:var(--accent);}
+ul.dot-list li strong{color:var(--text);font-weight:500;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mini-box{background:var(--surface2);border-radius:10px;padding:12px;}
+.mini-box .mb-label{font-size:0.62rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.mini-box .mb-items{font-size:0.79rem;line-height:1.7;color:#a09080;}
+
+.callout{border-radius:12px;padding:14px 16px;font-size:0.82rem;line-height:1.65;margin-top:10px;border-left:2px solid;}
+.callout strong{display:block;font-size:0.68rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.cal-m{background:var(--m-soft);border-color:var(--m);color:#d4809a;}
+.cal-f{background:var(--f-soft);border-color:var(--f);color:#b090d0;}
+.cal-o{background:var(--o-soft);border-color:var(--o);color:#c09060;}
+.cal-l{background:var(--l-soft);border-color:var(--l);color:#60a898;}
+.cal-n{background:var(--nest-soft);border-color:var(--nest);color:#c0a050;}
+.cal-a{background:rgba(201,169,110,0.08);border-color:var(--accent);color:var(--accent);}
+
+.mantra{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;line-height:1.7;text-align:center;color:var(--muted);padding:20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:20px 0;}
+.mantra span{color:var(--text);}
+
+/* DAY GRID */
+.day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.dg-cell{border-radius:10px;padding:10px 6px;text-align:center;border:1px solid transparent;transition:transform 0.15s;cursor:default;}
+.dg-cell:hover{transform:scale(1.05);}
+.dg-num{font-size:0.9rem;font-weight:600;display:block;}
+.dg-sub{font-size:0.58rem;display:block;margin-top:3px;line-height:1.3;opacity:0.85;}
+.dc-m{background:var(--m-soft);border-color:rgba(194,24,91,0.3);} .dc-m .dg-num{color:#ff6b9d;} .dc-m .dg-sub{color:var(--m);}
+.dc-f{background:var(--f-soft);border-color:rgba(142,107,191,0.3);} .dc-f .dg-num{color:#c4a0ff;} .dc-f .dg-sub{color:var(--f);}
+.dc-o{background:var(--o-soft);border-color:rgba(212,137,74,0.3);} .dc-o .dg-num{color:#f4b87a;} .dc-o .dg-sub{color:var(--o);}
+.dc-l{background:var(--l-soft);border-color:rgba(74,158,138,0.3);} .dc-l .dg-num{color:#7dd4c0;} .dc-l .dg-sub{color:var(--l);}
+.dc-n{background:var(--nest-soft);border-color:rgba(184,134,11,0.3);} .dc-n .dg-num{color:#e8c56a;} .dc-n .dg-sub{color:var(--nest);}
+
+/* UGC */
+.ugc-phase-card{border-radius:14px;padding:16px;border:1px solid var(--border);margin-bottom:10px;}
+.ugc-phase-card h4{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;margin-bottom:10px;}
+
+/* NESTING */
+.nesting-highlight{background:linear-gradient(135deg,var(--nest-soft),rgba(184,134,11,0.05));border:1px solid rgba(184,134,11,0.3);border-radius:16px;padding:20px;margin-bottom:10px;}
+.nesting-highlight h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:#e8c56a;margin-bottom:8px;}
+.nesting-highlight p{font-size:0.84rem;line-height:1.7;color:#b0a070;}
+
+/* WEEK BOARD */
+.week-board{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wb-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.wb-day{font-size:0.65rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.wb-title{font-family:'Cormorant Garamond',serif;font-size:0.95rem;font-weight:600;color:var(--text);margin-bottom:5px;}
+.wb-items{font-size:0.76rem;line-height:1.65;color:#9a8878;}
+
+footer{text-align:center;padding:28px 16px;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border);max-width:680px;margin:0 auto;}
+
+/* ── TRACKER ── */
+.tracker-input-area {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.tracker-input-area h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.tracker-input-area p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.date-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.date-input-row input[type="date"] {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  color-scheme: dark;
+}
+.date-input-row input[type="date"]:focus {
+  border-color: var(--accent);
+}
+.btn-track {
+  background: linear-gradient(135deg, var(--m), #8e3a6a);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  letter-spacing: 0.3px;
+}
+.btn-track:hover { opacity: 0.85; }
+
+.today-banner {
+  display: none;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+.today-banner.visible { display: block; }
+.today-banner-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.today-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.today-day-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.today-phase-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.today-focus {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.today-date-display {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Full 25-day list */
+.cycle-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cdl-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 14px;
+  position: relative;
+  transition: background 0.15s;
+}
+.cdl-item.is-today {
+  border-color: var(--accent) !important;
+  background: rgba(201,169,110,0.07);
+}
+.cdl-item.is-past {
+  opacity: 0.5;
+}
+.cdl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cdl-daynum {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 28px;
+  flex-shrink: 0;
+}
+.cdl-date {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+.cdl-info {
+  flex: 1;
+}
+.cdl-phase {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+}
+.cdl-sub {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.cdl-today-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 20px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.tracker-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+.tracker-empty .big-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+/* Scheduling hints panel */
+.schedule-hints {
+  display: none;
+  margin-top: 6px;
+}
+.schedule-hints.visible { display: block; }
+.hint-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hint-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 15px;
+}
+.hint-card h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.hint-dates {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.hint-dates strong { color: var(--text); font-weight: 500; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Your 25-Day Cycle · Complete Life System</div>
+  <h1>Live by<br><em>Your Rhythm</em></h1>
+  <p class="sub">Homeschool · UGC Creator · Home Manager · Self-Care<br>Your exact Roots rhythm — synced to your 25-day cycle</p>
+  <div class="cycle-bar"><div class="cb-m"></div><div class="cb-f"></div><div class="cb-o"></div><div class="cb-l"></div></div>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav-tabs">
+    <button class="nav-btn active-r" onclick="show('routine')">⏰ Daily Rhythm</button>
+    <button class="nav-btn" onclick="show('menstrual')">🩸 Menstrual</button>
+    <button class="nav-btn" onclick="show('follicular')">🌱 Follicular</button>
+    <button class="nav-btn" onclick="show('ovulatory')">✨ Ovulatory</button>
+    <button class="nav-btn" onclick="show('luteal')">🍂 Luteal</button>
+    <button class="nav-btn" onclick="show('nesting')">🪺 Nesting Days</button>
+    <button class="nav-btn" onclick="show('calendar')">📅 25-Day View</button>
+    <button class="nav-btn" onclick="show('ugc')">🎬 UGC by Phase</button>
+    <button class="nav-btn" onclick="show('tracker')">🗓️ My Tracker</button>
+  </div>
+</div>
+
+<!-- ══════════════ DAILY RHYTHM ══════════════ -->
+<div class="page visible" id="page-routine">
+  <div class="phase-hero hero-n" data-glyph="⏰">
+    <span class="hero-tag c-a">Your Roots Rhythm · Updated</span>
+    <h2>Your Daily Blocks</h2>
+    <p>Your exact rhythm from the Roots app — with cycle-syncing notes built into every block so you know how each one shifts across your 4 phases.</p>
+  </div>
+
+  <div class="slabel">Your Rhythm Blocks</div>
+  <div class="rhythm-list">
+
+    <!-- WIZARD HOUR -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-a"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🌙 Wizard Hour</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~5:00 am</div>
+        <div class="rblock-desc"><strong>You do something creative.</strong> This is your sacred, solo, no-phone hour. Before the house wakes, you belong to yourself.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>No creativity pressure. Warm water, heat pad, journaling only. Pure stillness.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Journaling + light movement. Brainstorm UGC ideas. Brain is fresh and open.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>HIIT or run + intention setting. Peak energy — use it. Write your boldest ideas.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Gentle yoga or walk. Early luteal: still creative. Late luteal: rest only, no pressure.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELF CARE -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-a"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">✨ Self Care</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~6:30 am</div>
+        <div class="rblock-desc"><strong>Take care of yourself.</strong> Skincare, get dressed, look and feel like yourself before the day demands anything. Prep kids' breakfast during this block too.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Slow and gentle. Heating pad. Minimal effort. Comfortable clothes always.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Try a new skincare step. Skin is clearing — enjoy it. Energy to put effort in.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Dress your best — you're magnetic. Do your full routine. You look and feel peak.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Keep it simple. Comfort over style late luteal. Magnesium supplement here.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BREAKFAST -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🍳 Breakfast</div>
+          <span class="rblock-badge badge-flex">〰 FLEXIBLE</span>
+        </div>
+        <div class="rblock-time">~7:00 am</div>
+        <div class="rblock-desc"><strong>Prepare breakfast. We have breakfast.</strong> Family table, no screens. Kids do their morning checklist (make bed, get dressed, brush teeth) while you prep.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Iron-rich: eggs, lentils, spinach. Ginger tea. Warm, easy foods. No cold meals.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Protein-forward: eggs, avocado, yogurt with seeds. Smoothies. Energizing foods.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Light and fresh. Berries, green smoothie, poached eggs. Appetite may be lower.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Complex carbs: oats, sweet potato, banana. Satisfies cravings and stabilizes mood.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK TIDY UP -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🧹 Quick Tidy Up</div>
+          <span class="rblock-badge badge-flex">〰 FLEXIBLE</span>
+        </div>
+        <div class="rblock-time">~9:00 am</div>
+        <div class="rblock-desc"><strong>Wash the dishes and quickly organize the house.</strong> 15–20 min reset. Kids help — each child has one task (8yr: wipe table; 5yr: put shoes away).</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Minimum viable. Dishes only. Ask partner to do more. Done is enough.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Full tidy + one extra task. You have the energy — wipe counters, sort mail too.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Fast and efficient — 10 mins and you're done. Save energy for UGC and school.</div>
+          <div class="pn-item pn-n"><div class="pn-label">🪺 Nesting Days</div>This becomes a FULL deep clean. Channel the surge here. See Nesting tab.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOMESCHOOL -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-m"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">📚 Homeschool</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~10:00 am</div>
+        <div class="rblock-desc"><strong>We start doing key subjects.</strong> 8yr works independently first (30 min) while you do hands-on work with 5yr. Then flip. Morning Circle together starts every session.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Cozy school — audiobooks, documentaries, read-alouds from the couch. Apps for independence.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Introduce new subjects, experiments, field trips. Your enthusiasm is contagious.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Best teaching days — tackle hard concepts. Plan co-op or park school days.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Review + consolidation. Wind down units. Let 8yr lead more. Cozy by end of phase.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEALS / LUNCH -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-a"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🍽️ Meals</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~12:00 pm</div>
+        <div class="rblock-desc"><strong>Cook and have lunch.</strong> Family table. Kids help set up. Keep lunch simple — batch cook on Sunday and follicular days so this block is easy all week.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Bone broth soups, warming stews, iron-rich meals. Easy — use batch-cooked food.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Cook double batches today. Freeze or fridge for your luteal and menstrual days.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Light: salads, grain bowls, fresh proteins. Keep it quick — you have things to do.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Complex carbs + protein. Dark chocolate after. Satisfy cravings with quality food.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME MAKING + UGC FILMING -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-o"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🎬 Home Making + Film My Day</div>
+          <span class="rblock-badge badge-ugc">🎬 UGC</span>
+        </div>
+        <div class="rblock-time">~2:00 pm</div>
+        <div class="rblock-desc"><strong>House chores for the day while filming your day.</strong> This is your smartest block — you're creating content AND managing the home at the same time. Kids play independently or join in. Partner available if needed.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Light chores only. No filming Day 1–2. Day 3–4: a quiet "rest day vlog" or voiceover from the couch works.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Batch film 3–4 videos here. Energy is high. Do chores + dedicated filming sessions back to back.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Peak filming days — camera-facing content, brand reviews, demos. You look and feel your best.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Early: edit + admin while doing chores. Late: minimum. Behind-the-scenes only if needed.</div>
+        </div>
+        <div class="callout cal-o" style="margin-top:12px;">
+          <strong>💡 Smart Filming Strategy</strong>
+          Wear a clip mic while you clean, cook, organize. Real-life content performs well AND you're being productive at the same time. Your girls joining in = authentic family content.
+        </div>
+      </div>
+    </div>
+
+    <!-- REST -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">😴 Rest</div>
+          <span class="rblock-badge badge-flex">〰 FLEXIBLE</span>
+        </div>
+        <div class="rblock-time">~4:00 pm</div>
+        <div class="rblock-desc"><strong>Rest for 1 hour.</strong> This is non-negotiable self-care. Lie down, meditate, read, or nap. Even 20 minutes of horizontal time resets your nervous system for the evening.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Full 60 min. Heat pad. No phone. This is medicine. Don't skip it.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>20–30 min is enough — energy is high. Use extra time for UGC admin or planning.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>20 min only. You won't feel tired but rest anyway — you're working hard internally.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Full 60 min always. Late luteal: treat this like a nap. No guilt. Body needs it.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GIRLS TIME -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-m"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">👧👧 Girls Time</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~5:00 pm</div>
+        <div class="rblock-desc"><strong>Me and the girls play or do something together.</strong> Pure presence time — no phone, no multitasking. This is their anchor of the day.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Cozy together — board games, reading, puzzles, a movie. Low energy, high connection.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Adventures — park, nature walk, baking together, art projects. You have the spark.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Your most fun and present — dancing, creating, outdoor games. Kids feel your joy.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Slower together time. Audiobook snuggle, colouring, quiet crafts. Protect your calm.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOUSE RESET -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🏠 House Reset</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~6:00 pm</div>
+        <div class="rblock-desc"><strong>Quick organize + girls shower.</strong> 20-minute all-hands reset. Kids each have jobs. 8yr helps tidy living room, 5yr puts away her things. Partner does kitchen wipe-down. You supervise showers.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Delegate this entirely to partner and kids Day 1–2. You supervise from the sofa.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Full reset + one extra thing (wipe surfaces, sort laundry). You have the energy.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Fast and efficient. 15 min and done. Everyone responds to your calm energy.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Partner takes the lead. You do girls' shower only. Give yourself permission to step back.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN NEXT DAY -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-a"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">📋 Plan Next Day</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~7:00 pm</div>
+        <div class="rblock-desc"><strong>Use Roots app and plan next day.</strong> Set tomorrow's rhythm blocks. Write your 3 priorities. Note where you are in your cycle and adjust tomorrow's blocks accordingly. Takes 10 minutes.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Plan light. Mark blocks as "cozy mode." Give yourself permission before the day starts.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Plan ambitiously — your follow-through is highest this week. Add extra tasks freely.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Plan your most important meetings and content for tomorrow. Strike while energy peaks.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>Plan honestly and gently. Late luteal: cut tomorrow's list in half before you start.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DINNER -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🌙 Dinner</div>
+          <span class="rblock-badge badge-flex">〰 FLEXIBLE</span>
+        </div>
+        <div class="rblock-time">~8:00 pm</div>
+        <div class="rblock-desc"><strong>Have dinner.</strong> Together if possible. Keep it simple — by 8pm you've done a full day. Batch cooking on energy-high days means dinner is always easy.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>Soup, stew, warming comfort food. Use batch-cooked meals. Zero effort cooking.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>This is the best night for a nice dinner out or a date night at home — you're at your most social.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WASH DISHES -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-l"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🫧 Wash Dishes</div>
+          <span class="rblock-badge badge-flex">〰 FLEXIBLE</span>
+        </div>
+        <div class="rblock-time">After dinner</div>
+        <div class="rblock-desc"><strong>Wash the utensils we used.</strong> Partner does this on menstrual and late luteal days. The 8yr can help rinse and stack. You should not be ending your day standing at a sink alone.</div>
+        <div class="callout cal-l" style="margin-top:10px;">
+          <strong>🤝 Partner Rule</strong>
+          Days 1–4 (period) and days 22–25 (late luteal) — partner owns dishes and kitchen close-down. This is a standing arrangement, not a request.
+        </div>
+      </div>
+    </div>
+
+    <!-- BED TIME -->
+    <div class="rblock">
+      <div class="rblock-left-bar bar-a"></div>
+      <div class="rblock-inner">
+        <div class="rblock-header">
+          <div class="rblock-title">🌛 Bed Time</div>
+          <span class="rblock-badge badge-anchor">⚓ ANCHOR</span>
+        </div>
+        <div class="rblock-time">~9:00 pm</div>
+        <div class="rblock-desc"><strong>I try to sleep now.</strong> 8 hours before your 5am wake. Wind-down starts at 8:30pm — dim lights, phone on airplane mode, skincare, herbal tea. Sleep is your most important health tool.</div>
+        <div class="phase-note">
+          <div class="pn-item pn-m"><div class="pn-label">🩸 Menstrual</div>8:30pm start. Epsom salt bath first. Magnesium + chamomile tea. Heat pad in bed.</div>
+          <div class="pn-item pn-f"><div class="pn-label">🌱 Follicular</div>Standard 9pm. Energy is up so the wind-down is harder — start dimming lights by 8pm.</div>
+          <div class="pn-item pn-o"><div class="pn-label">✨ Ovulatory</div>Protect sleep even though you don't feel tired. Your body is working hard hormonally.</div>
+          <div class="pn-item pn-l"><div class="pn-label">🍂 Luteal</div>8:30pm or earlier. Progesterone crash disrupts sleep — magnesium glycinate 400mg before bed always.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end rhythm-list -->
+
+  <div class="slabel">Weekly Home Rhythm</div>
+  <div class="week-board">
+    <div class="wb-card"><div class="wb-day">Monday</div><div class="wb-title">Fresh Start</div><div class="wb-items">Plan week · Grocery order · Laundry Day 1 · Set school materials out</div></div>
+    <div class="wb-card"><div class="wb-day">Tuesday</div><div class="wb-title">Deep Work</div><div class="wb-items">Bathrooms + floors · Laundry fold · UGC batch filming or editing</div></div>
+    <div class="wb-card"><div class="wb-day">Wednesday</div><div class="wb-title">Out Day</div><div class="wb-items">Library · Park · Nature walk · Grocery pickup · Lighter home day</div></div>
+    <div class="wb-card"><div class="wb-day">Thursday</div><div class="wb-title">Create Day</div><div class="wb-items">Extra UGC · Brand emails · Kitchen deep clean · Editing catch-up</div></div>
+    <div class="wb-card"><div class="wb-day">Friday</div><div class="wb-title">Fun Friday</div><div class="wb-items">Project school · Game time · Family movie · Meal prep for weekend</div></div>
+    <div class="wb-card"><div class="wb-day">Saturday</div><div class="wb-title">Family Day</div><div class="wb-items">No school · Adventures · Partner leads morning · You rest or create freely</div></div>
+    <div class="wb-card"><div class="wb-day">Sunday</div><div class="wb-title">Reset Day</div><div class="wb-items">Batch cook · Plan school week · Prep UGC props · Early bedtime · Reflect</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ MENSTRUAL ══════════════ -->
+<div class="page" id="page-menstrual">
+  <div class="phase-hero hero-m" data-glyph="🩸">
+    <span class="hero-tag c-m">Days 1–4 · Inner Winter</span>
+    <h2 class="c-m">Menstrual Phase</h2>
+    <p>Your period days. Hormones at their lowest. Your rhythm stays the same but the intensity of every block drops. Rest is the work right now.</p>
+  </div>
+  <div class="mantra"><span>"I release. I rest. I renew.<br>Stillness is not laziness — it is wisdom."</span></div>
+
+  <div class="slabel">Block-by-Block Adjustments</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-m">⏰</div><h3>How Each Block Shifts</h3></div>
+    <ul class="dot-list dot-m">
+      <li><strong>Wizard Hour:</strong> No movement. Warm lemon water, heating pad, gentle journaling. Write what you want to release this cycle.</li>
+      <li><strong>Self Care:</strong> Extra slow. Comfortable clothes always. No pressure to look "put together."</li>
+      <li><strong>Breakfast:</strong> Iron-rich foods every day — eggs, spinach, lentils, red meat. Ginger or raspberry leaf tea for cramps.</li>
+      <li><strong>Quick Tidy Up:</strong> Dishes only. Ask partner to handle the rest Day 1–2. Done is enough.</li>
+      <li><strong>Homeschool:</strong> Full cozy mode. Audiobooks, documentaries, read-alouds on the sofa. Apps for independent learning.</li>
+      <li><strong>Home Making + Film:</strong> Day 1–2: chores only — no filming. Day 3–4: quiet vlog or voiceover only if you feel okay.</li>
+      <li><strong>Rest:</strong> Full 60 min every day. Heat pad. This is medicine — not optional.</li>
+      <li><strong>Girls Time:</strong> Board games, puzzles, books, movies. Low energy, high warmth.</li>
+      <li><strong>House Reset:</strong> Partner and kids own this block Day 1–2. You supervise from the sofa.</li>
+      <li><strong>Dish Washing:</strong> Partner does this all 4 days. Standing arrangement.</li>
+      <li><strong>Bed Time:</strong> Start wind-down at 8:30pm. Epsom bath + magnesium + chamomile tea.</li>
+    </ul>
+  </div>
+
+  <div class="slabel">Body Support</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-m">🌿</div><h3>Cramp & Fatigue Protocol</h3></div>
+    <div class="two-col">
+      <div class="mini-box"><div class="mb-label">Eat</div><div class="mb-items">Iron: red meat, lentils, spinach<br>Omega-3: salmon, flaxseed<br>Magnesium: dark chocolate<br>Ginger tea for cramps<br>Bone broth soups<br>Warming cooked meals</div></div>
+      <div class="mini-box"><div class="mb-label">Supplements</div><div class="mb-items">Magnesium glycinate 400mg<br>Vitamin C with iron<br>Omega-3 fish oil<br>Raspberry leaf tea<br>Start magnesium 3 days BEFORE period</div></div>
+    </div>
+    <div class="callout cal-m"><strong>🩸 Cramp Protocol</strong>Magnesium glycinate + ginger tea + heat pad = significant cramp reduction. Start magnesium on Day 22 of every cycle, not when cramping starts.</div>
+  </div>
+</div>
+
+<!-- ══════════════ FOLLICULAR ══════════════ -->
+<div class="page" id="page-follicular">
+  <div class="phase-hero hero-f" data-glyph="🌸">
+    <span class="hero-tag c-f">Days 5–11 · Inner Spring</span>
+    <h2 class="c-f">Follicular Phase</h2>
+    <p>Energy and motivation return and rise. Use this phase to create, start, batch, and plan. Everything you begin now carries real momentum.</p>
+  </div>
+  <div class="mantra"><span>"I begin. I grow. I am full of possibility.<br>Everything I start now carries fresh momentum."</span></div>
+
+  <div class="slabel">Block-by-Block Amplifications</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-f">⏰</div><h3>How Each Block Expands</h3></div>
+    <ul class="dot-list dot-f">
+      <li><strong>Wizard Hour:</strong> Add movement — yoga flow, run, dance. Brainstorm UGC ideas. Write freely.</li>
+      <li><strong>Self Care:</strong> Try a new skincare product. Skin is clearing — good time for glow treatments.</li>
+      <li><strong>Breakfast:</strong> Prep double portions. Cook extra and refrigerate for the week. High protein for rising energy needs.</li>
+      <li><strong>Quick Tidy Up:</strong> Add one extra task — wipe surfaces, sort one drawer, organize a corner. You have the capacity.</li>
+      <li><strong>Homeschool:</strong> Introduce new subjects, books, experiments. Your enthusiasm transfers directly to the girls.</li>
+      <li><strong>Home Making + Film:</strong> BATCH FILM 3–4 videos. Plan and shoot in follicular so you're ahead for the whole cycle.</li>
+      <li><strong>Rest:</strong> 20–30 min is fine. Use extra time to plan your UGC calendar for the cycle.</li>
+      <li><strong>Girls Time:</strong> Adventures — park, nature walk, baking, art projects. You have the spark, use it with them.</li>
+      <li><strong>Plan Next Day:</strong> Plan ambitiously here — your follow-through is at its highest. Add the bigger tasks.</li>
+    </ul>
+    <div class="callout cal-f"><strong>🎯 Follicular Priority</strong>Batch cook on Day 5–6. Batch film on Days 7–9. Plan school for the full next 3 weeks on Day 6. Front-load the work so your period days are easy.</div>
+  </div>
+
+  <div class="slabel">Body Support</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-f">💪</div><h3>Movement & Food</h3></div>
+    <div class="two-col">
+      <div class="mini-box"><div class="mb-label">Move</div><div class="mb-items">Dance · Cycling<br>Hiking · Pilates<br>Strength training<br>Running · New classes<br>Build back gradually Day 5</div></div>
+      <div class="mini-box"><div class="mb-label">Eat</div><div class="mb-items">Eggs · Avocado<br>Fermented foods<br>Sprouts · Quinoa<br>Pumpkin seeds<br>Green smoothies<br>High protein</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ OVULATORY ══════════════ -->
+<div class="page" id="page-ovulatory">
+  <div class="phase-hero hero-o" data-glyph="☀️">
+    <span class="hero-tag c-o">Days 12–16 · Inner Summer</span>
+    <h2 class="c-o">Ovulatory Phase</h2>
+    <p>Peak power. Estrogen and testosterone surge. You are magnetic, articulate, and confident. Schedule everything that matters most here.</p>
+  </div>
+  <div class="mantra"><span>"I am radiant and powerful.<br>I speak clearly, I show up fully, I shine without apology."</span></div>
+
+  <div class="slabel">Block-by-Block Peak Mode</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-o">⏰</div><h3>How Each Block Peaks</h3></div>
+    <ul class="dot-list dot-o">
+      <li><strong>Wizard Hour:</strong> HIIT, heavy lifting, or long run. Write your boldest ideas — this is when they arrive clearest.</li>
+      <li><strong>Self Care:</strong> Dress your best — you're magnetic. Full routine. You'll look and feel peak.</li>
+      <li><strong>Homeschool:</strong> Best teaching days of the cycle. Tackle hard concepts. Record a lesson — great for UGC and school documentation.</li>
+      <li><strong>Home Making + Film:</strong> FILM ALL CAMERA-FACING CONTENT HERE. Reviews, demos, talking heads, brand content — all of it.</li>
+      <li><strong>Rest:</strong> 20 min only. You won't feel tired but rest anyway — your body is working hard hormonally.</li>
+      <li><strong>Girls Time:</strong> Your most fun and present days — dancing, outdoor games, big adventures. They feel your joy.</li>
+      <li><strong>Plan Next Day:</strong> Book your most important things — brand calls, school assessments, social plans — into ovulation days.</li>
+      <li><strong>Dinner:</strong> Best week for a date night or nice dinner. You're at your most social and charming.</li>
+    </ul>
+    <div class="callout cal-o"><strong>📸 Content Creator's Best Days</strong>Film everything Days 12–16. You look, sound, and feel your best. One great filming session here gives you content for 2 weeks.</div>
+  </div>
+
+  <div class="slabel">Body Support</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-o">💪</div><h3>Movement & Food</h3></div>
+    <div class="two-col">
+      <div class="mini-box"><div class="mb-label">Move</div><div class="mb-items">HIIT · Heavy lifting<br>Running · Competitive sports<br>Group fitness · Dance<br>Warm up well — ligament<br>laxity increases slightly</div></div>
+      <div class="mini-box"><div class="mb-label">Eat</div><div class="mb-items">Raw veggies · Salads<br>Light proteins · Berries<br>Beets & broccoli<br>(liver support for estrogen)<br>High fiber · Coconut water</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LUTEAL ══════════════ -->
+<div class="page" id="page-luteal">
+  <div class="phase-hero hero-l" data-glyph="🍂">
+    <span class="hero-tag c-l">Days 17–25 · Inner Autumn</span>
+    <h2 class="c-l">Luteal Phase</h2>
+    <p>Progesterone rises then falls. Energy turns inward. Detail work early, then slowness intentionally. Days 22–25 call for your deepest self-care.</p>
+  </div>
+  <div class="mantra"><span>"I complete. I slow. I prepare.<br>My sensitivity is my superpower, not my weakness."</span></div>
+
+  <div class="slabel">Early Luteal (Days 17–21)</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-l">⏰</div><h3>Productive Wind-Down</h3></div>
+    <ul class="dot-list dot-l">
+      <li><strong>Wizard Hour:</strong> Pilates, strength training, moderate cardio still fine. Creative journaling.</li>
+      <li><strong>Homeschool:</strong> Finish units, assessments, review. No new complex content — consolidate what was learned.</li>
+      <li><strong>Home Making + Film:</strong> Edit everything filmed in ovulation. Write captions. Upload. Admin and behind-the-scenes content.</li>
+      <li><strong>Girls Time:</strong> Intimate and slower — movie nights, colouring, audiobooks together.</li>
+      <li><strong>Plan Next Day:</strong> Be honest — trim your list before you go to sleep. Don't plan ovulation-level output.</li>
+    </ul>
+  </div>
+
+  <div class="slabel">Late Luteal (Days 22–25)</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-l">🌿</div><h3>Deep Slowdown + PMS Care</h3></div>
+    <ul class="dot-list dot-l">
+      <li><strong>Wizard Hour:</strong> Gentle yoga or stretching only. No intensity. Your cortisol is already elevated.</li>
+      <li><strong>Quick Tidy Up:</strong> Partner and kids take this. You do minimum.</li>
+      <li><strong>Homeschool:</strong> Full cozy mode — audiobooks, art, documentaries. You are supervising from the couch.</li>
+      <li><strong>Home Making + Film:</strong> Scheduled posts only. No new filming. No new pitches.</li>
+      <li><strong>Rest:</strong> Full 60 min always. Treat as a nap. Non-negotiable.</li>
+      <li><strong>House Reset:</strong> Partner leads. You do girls' shower only.</li>
+      <li><strong>Dishes:</strong> Partner owns this all of late luteal.</li>
+      <li><strong>Bed Time:</strong> Start at 8:30pm. Magnesium 400mg. Chamomile tea. Epsom bath.</li>
+    </ul>
+    <div class="callout cal-l"><strong>🧠 PMS & the Girls</strong>"Mama's body is getting ready for her period and I feel extra tired today. It's not about you, I love you." Say this out loud. It models emotional literacy and removes your guilt at the same time.</div>
+  </div>
+
+  <div class="slabel">PMS Toolkit</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-l">💊</div><h3>Days 22–25 Support</h3></div>
+    <div class="two-col">
+      <div class="mini-box"><div class="mb-label">Supplements</div><div class="mb-items">Magnesium glycinate 400mg<br>Vitamin B6 50mg<br>Evening primrose oil<br>Omega-3<br>Start Day 22 of every cycle</div></div>
+      <div class="mini-box"><div class="mb-label">Avoid</div><div class="mb-items">Alcohol (worsens all symptoms)<br>Excess salt (bloating)<br>Refined sugar (mood crashes)<br>Caffeine after noon<br>Big social commitments</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ NESTING DAYS ══════════════ -->
+<div class="page" id="page-nesting">
+  <div class="phase-hero hero-n" data-glyph="🪺">
+    <span class="hero-tag c-n">Days 23–24 · Your Unique Gift</span>
+    <h2 class="c-n">Your Nesting Days</h2>
+    <p>The 2 days before your period when you get a burst of energy specifically for cleaning and organizing everything. This is real, hormonal, and yours to use intentionally.</p>
+  </div>
+
+  <div class="slabel">Why It Happens</div>
+  <div class="nesting-highlight">
+    <h3>🧬 The Science Behind Your Surge</h3>
+    <p>On Days 23–24, progesterone and estrogen crash together. This triggers a spike in <strong>cortisol and adrenaline</strong> — your body's "get ready" hormones. Instead of pure anxiety, your system channels this as physical, environment-controlling energy. Your brain also craves <strong>dopamine</strong> to offset the serotonin crash of late luteal — and cleaning and organizing deliver exactly that reward. Evolutionarily it mirrors pre-birth nesting in animals. Your period is your monthly reset, and your body prepares the space for it. This is not random. This is you.</p>
+  </div>
+
+  <div class="slabel">Your Nesting Day Rhythm (Days 23–24)</div>
+  <div class="rhythm-list">
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">5:00 am — Wizard Hour</div>
+      <div class="rblock-desc">Gentle yoga + journaling. Write your nesting list. Prioritize 3 big tasks. Don't begin yet — let the surge build.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">7:00–9:00 am — Breakfast + Tidy Up</div>
+      <div class="rblock-desc">Normal blocks but you'll notice the urge already. Let the tidy-up go slightly longer today — wipe counters, clear surfaces. The kids can help sort things into piles.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">10:00 am — Homeschool (Light)</div>
+      <div class="rblock-desc">Set up independent work — apps, audiobook, art project. You're in and out. The girls know today is a "nesting day" — they can participate in organizing their own room.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">~11:00 am — Nesting Block 1 (90 min)</div>
+      <div class="rblock-desc">Your biggest cleaning task of the day. Play a podcast or music. Deep clean kitchen, bathrooms, or whatever calls loudest. Kids can help wipe, sort, and carry — make it a team game.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">12:00 pm — Meals + Rest (Full Stop)</div>
+      <div class="rblock-desc">Lunch, then your full rest hour. You've done the hard part. The surge will try to keep you going — honour your body and stop.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">2:00 pm — Nesting Block 2 (60 min)</div>
+      <div class="rblock-desc">Organizing, decluttering, period kit prep, meal prep. Smaller and more detailed tasks. Prep your comfort basket for your period days.</div>
+    </div></div>
+    <div class="rblock"><div class="rblock-left-bar bar-n"></div><div class="rblock-inner">
+      <div class="rblock-time">4:00 pm — Rest (Non-negotiable)</div>
+      <div class="rblock-desc">The nesting surge fades fast. Honour the stop. Rest now so your period days are easier.</div>
+    </div></div>
+  </div>
+
+  <div class="slabel">Nesting Master Checklist</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-n">🧹</div><h3>Save These Tasks for Days 23–24</h3></div>
+    <ul class="dot-list dot-n">
+      <li><strong>Kitchen deep clean</strong> — inside fridge, wipe cabinets, organize pantry</li>
+      <li><strong>Bathrooms</strong> — grout, behind toilet, restock all supplies</li>
+      <li><strong>Girls' rooms reset</strong> — declutter toys, organize shelves, rotate items</li>
+      <li><strong>Laundry blitz</strong> — wash, dry, fold AND put away completely</li>
+      <li><strong>Batch cook</strong> — soups, grains, snacks for your period days</li>
+      <li><strong>Period kit prep</strong> — restock period products, heat packs, magnesium, dark chocolate, cozy socks, favorite tea</li>
+      <li><strong>Homeschool prep</strong> — set out next week's materials, sharpen pencils, organize books</li>
+      <li><strong>UGC workspace</strong> — clean filming space, prep props, organize content folders</li>
+      <li><strong>Home admin</strong> — pay bills, file papers, clear email inbox</li>
+      <li><strong>Car clean-out</strong> or one declutter/donate bag</li>
+    </ul>
+    <div class="callout cal-n"><strong>🌙 The Gift of Nesting</strong>When you work with these 2 days, your period arrives to a clean home, prepped meals, restocked supplies, and organized space. You have taken care of your future self. That is love in action.</div>
+  </div>
+</div>
+
+<!-- ══════════════ 25-DAY CALENDAR ══════════════ -->
+<div class="page" id="page-calendar">
+  <div class="phase-hero hero-n" data-glyph="📅">
+    <span class="hero-tag c-a">Your Full Cycle</span>
+    <h2>25-Day Map</h2>
+    <p>Every day with a focus word. Use this to plan your whole month — schedule the right things on the right days.</p>
+  </div>
+
+  <div class="day-grid">
+    <div class="dg-cell dc-m"><span class="dg-num">1</span><span class="dg-sub">Period · Rest deeply</span></div>
+    <div class="dg-cell dc-m"><span class="dg-num">2</span><span class="dg-sub">Heaviest · Stillness</span></div>
+    <div class="dg-cell dc-m"><span class="dg-num">3</span><span class="dg-sub">Gentle yoga · Warmth</span></div>
+    <div class="dg-cell dc-m"><span class="dg-num">4</span><span class="dg-sub">Period ends · Reflect</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">5</span><span class="dg-sub">Energy returns · Begin</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">6</span><span class="dg-sub">Plan month · Batch cook</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">7</span><span class="dg-sub">Batch film · Create</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">8</span><span class="dg-sub">Brainstorm · Scripts</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">9</span><span class="dg-sub">New subjects · Learn</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">10</span><span class="dg-sub">Social · Outings</span></div>
+    <div class="dg-cell dc-f"><span class="dg-num">11</span><span class="dg-sub">Pitch brands · Build</span></div>
+    <div class="dg-cell dc-o"><span class="dg-num">12</span><span class="dg-sub">Peak begins · Shine</span></div>
+    <div class="dg-cell dc-o"><span class="dg-num">13</span><span class="dg-sub">Film everything · Best day</span></div>
+    <div class="dg-cell dc-o"><span class="dg-num">14</span><span class="dg-sub">Ovulation · Peak</span></div>
+    <div class="dg-cell dc-o"><span class="dg-num">15</span><span class="dg-sub">Camera content · Go live</span></div>
+    <div class="dg-cell dc-o"><span class="dg-num">16</span><span class="dg-sub">Negotiate · Connect</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">17</span><span class="dg-sub">Edit · Deliver content</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">18</span><span class="dg-sub">Detail work · Finish</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">19</span><span class="dg-sub">Wrap units · Review</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">20</span><span class="dg-sub">Slow down gently</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">21</span><span class="dg-sub">Rest more · Cozy</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">22</span><span class="dg-sub">PMS care · Start magnesium</span></div>
+    <div class="dg-cell dc-n"><span class="dg-num">23</span><span class="dg-sub">🪺 NEST · Deep clean</span></div>
+    <div class="dg-cell dc-n"><span class="dg-num">24</span><span class="dg-sub">🪺 NEST · Prep & stock</span></div>
+    <div class="dg-cell dc-l"><span class="dg-num">25</span><span class="dg-sub">Rest · Period tomorrow</span></div>
+  </div>
+
+  <div class="slabel">What to Schedule When</div>
+  <div class="card">
+    <div class="card-head"><div class="card-icon ci-a">🗓️</div><h3>Monthly Planning Rules</h3></div>
+    <ul class="dot-list dot-a">
+      <li><strong>Brand pitches & negotiations:</strong> Days 12–16 only</li>
+      <li><strong>Batch filming:</strong> Days 7–9 (follicular) and 12–16 (ovulatory)</li>
+      <li><strong>Doctor/dentist appointments:</strong> Days 6–14</li>
+      <li><strong>Hard homeschool concepts:</strong> Days 8–16</li>
+      <li><strong>Big social events:</strong> Days 10–16 · Smaller gatherings: 17–20 · Protect 21–25</li>
+      <li><strong>Deep cleaning:</strong> Always Days 23–24 — let the nesting surge work for you</li>
+      <li><strong>Financial decisions:</strong> Days 6–16 only. Never late luteal or menstrual.</li>
+      <li><strong>Hard conversations with partner:</strong> Days 5–16. Never Days 22–25.</li>
+      <li><strong>Batch cooking:</strong> Days 5–7 to feed yourself through the whole cycle</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════ UGC BY PHASE ══════════════ -->
+<div class="page" id="page-ugc">
+  <div class="phase-hero hero-o" data-glyph="🎬">
+    <span class="hero-tag c-o">Content Creator System</span>
+    <h2>UGC by Phase</h2>
+    <p>Your content business fully synced to your cycle. Film when you're magnetic. Edit when you're detail-oriented. Rest when you need it. Stop fighting your biology.</p>
+  </div>
+
+  <div class="ugc-phase-card" style="background:var(--m-soft);border-color:rgba(194,24,91,0.3);">
+    <h4 class="c-m">🩸 Menstrual (Days 1–4) — Admin Only</h4>
+    <ul class="dot-list dot-m">
+      <li>Respond to brand emails at your own pace</li>
+      <li>Review contracts and briefs — your intuition is sharpest now</li>
+      <li>Write future content ideas in your journal</li>
+      <li>Audit last cycle's analytics — what performed, what didn't</li>
+      <li><strong>No filming. No pitching. No camera. No pressure.</strong></li>
+    </ul>
+  </div>
+
+  <div class="ugc-phase-card" style="background:var(--f-soft);border-color:rgba(142,107,191,0.3);">
+    <h4 class="c-f">🌱 Follicular (Days 5–11) — Create & Pitch</h4>
+    <ul class="dot-list dot-f">
+      <li><strong>Write all your scripts</strong> for the cycle — brain creates best now</li>
+      <li>Batch film 4–6 pieces across 2–3 sessions in your 2pm Home Making block</li>
+      <li>Pitch 3–5 new brands — your writing is confident and fresh</li>
+      <li>Try a new content format you've been curious about</li>
+      <li>Organize your content calendar for the full 25 days ahead</li>
+      <li>Plan your filming day outfits and props for ovulation week</li>
+    </ul>
+  </div>
+
+  <div class="ugc-phase-card" style="background:var(--o-soft);border-color:rgba(212,137,74,0.3);">
+    <h4 class="c-o">✨ Ovulatory (Days 12–16) — Film Everything</h4>
+    <ul class="dot-list dot-o">
+      <li><strong>All camera-facing content goes here.</strong> Talking heads, reviews, demos, unboxings, brand content.</li>
+      <li>Go live — your energy is electric in real time</li>
+      <li>Negotiate rates with brands — you're most confident and articulate</li>
+      <li>Reach out to dream brands — the fear genuinely feels smaller now</li>
+      <li>Film while doing your 2pm Home Making block — clip mic + natural content</li>
+      <li>Take brand photos — skin, energy, and confidence at their absolute peak</li>
+    </ul>
+  </div>
+
+  <div class="ugc-phase-card" style="background:var(--l-soft);border-color:rgba(74,158,138,0.3);">
+    <h4 class="c-l">🍂 Early Luteal (Days 17–21) — Edit & Deliver</h4>
+    <ul class="dot-list dot-l">
+      <li>Edit everything filmed in ovulation — your detail eye is sharpest here</li>
+      <li>Write captions, add hashtags, finalize deliverables</li>
+      <li>Submit content to brands, send invoices</li>
+      <li>Voiceovers, sit-down reviews, behind-the-scenes — works well</li>
+      <li>Schedule posts for the coming weeks using your 2pm block</li>
+      <li>Respond to comments and engage with your audience</li>
+    </ul>
+  </div>
+
+  <div class="ugc-phase-card" style="background:var(--nest-soft);border-color:rgba(184,134,11,0.3);">
+    <h4 class="c-n">🪺 Late Luteal / Nesting (Days 22–25) — Minimum</h4>
+    <ul class="dot-list dot-n">
+      <li>Scheduled posts only — set and forget</li>
+      <li>No new pitches, no new commitments, no new filming</li>
+      <li>On nesting Days 23–24: organize your filming space and props while you have the energy</li>
+      <li>Write down content ideas as they come — your subconscious is very active</li>
+      <li><strong>Protect your energy. Your period is coming. You've already done the work.</strong></li>
+    </ul>
+  </div>
+
+  <div class="callout cal-o" style="margin-top:4px;">
+    <strong>💡 The Cycle Creator Method</strong>
+    Plan in menstrual → Create & pitch in follicular → Film everything in ovulatory → Edit & deliver in luteal → Rest in late luteal. When you stop fighting your cycle and flow with it, your output increases while your effort decreases.
+  </div>
+</div>
+
+<!-- ══════════════ TRACKER ══════════════ -->
+<div class="page" id="page-tracker">
+  <div class="phase-hero hero-n" data-glyph="🗓">
+    <span class="hero-tag c-a">Your Real Dates · Cycle Tracker</span>
+    <h2>My Cycle Tracker</h2>
+    <p>Enter the first day of your last period and see your entire 25-day cycle mapped to real calendar dates — so you know exactly which phase you're in and what to do each day.</p>
+  </div>
+
+  <div class="tracker-input-area">
+    <h3>When did your last period start?</h3>
+    <p>Day 1 = the first day of bleeding</p>
+    <div class="date-input-row">
+      <input type="date" id="period-start-input" />
+      <button class="btn-track" onclick="runTracker()">Track My Cycle</button>
+    </div>
+  </div>
+
+  <div class="today-banner" id="today-banner">
+    <div class="today-banner-top">
+      <div>
+        <div class="today-label" id="today-label">TODAY</div>
+        <div class="today-day-num" id="today-day-num">—</div>
+        <div class="today-phase-name" id="today-phase-name"></div>
+        <div class="today-focus" id="today-focus"></div>
+      </div>
+      <div class="today-date-display" id="today-date-display"></div>
+    </div>
+  </div>
+
+  <div class="schedule-hints" id="schedule-hints">
+    <div class="slabel">Key Dates This Cycle</div>
+    <div class="hint-grid" id="hint-grid"></div>
+  </div>
+
+  <div class="slabel" id="daylist-label" style="display:none;">All 25 Days</div>
+  <div class="cycle-day-list" id="cycle-day-list">
+    <div class="tracker-empty">
+      <span class="big-icon">🌙</span>
+      Enter your period start date above to see your cycle mapped to real dates.
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built around your exact Roots app rhythm and your 25-day cycle.<br>
+  Track your own patterns over 3+ cycles — your body will teach you even more. 🌙<br><br>
+  <em>Not medical advice · Listen to your body above all else</em>
+</footer>
+
+<script>
+const pageIds = ['routine','menstrual','follicular','ovulatory','luteal','nesting','calendar','ugc','tracker'];
+const activeClasses = { routine:'active-r', menstrual:'active-m', follicular:'active-f', ovulatory:'active-o', luteal:'active-l', nesting:'active-n', calendar:'active-r', ugc:'active-o', tracker:'active-r' };
+
+function show(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.className = 'nav-btn');
+  document.getElementById('page-' + id).classList.add('visible');
+  const idx = pageIds.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add(activeClasses[id]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── CYCLE DATA ──
+const CYCLE_DAYS = [
+  { day:1,  phase:'menstrual', phaseLabel:'🩸 Menstrual', color:'#c2185b', dotColor:'#c2185b', focus:'Period · Rest deeply', what:'Rest, heating pad, iron-rich foods, no filming, gentle journaling only.' },
+  { day:2,  phase:'menstrual', phaseLabel:'🩸 Menstrual', color:'#c2185b', dotColor:'#c2185b', focus:'Heaviest · Stillness', what:'Heaviest flow day. Full rest. Partner owns dishes & house reset. Couch school only.' },
+  { day:3,  phase:'menstrual', phaseLabel:'🩸 Menstrual', color:'#c2185b', dotColor:'#c2185b', focus:'Gentle yoga · Warmth', what:'Gentle movement okay. Quiet vlog or voiceover if you feel okay. Warmth always.' },
+  { day:4,  phase:'menstrual', phaseLabel:'🩸 Menstrual', color:'#c2185b', dotColor:'#c2185b', focus:'Period ends · Reflect', what:'Final period day. Review contracts & briefs — intuition sharpest now. Write cycle notes.' },
+  { day:5,  phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Energy returns · Begin', what:'Energy returns! Batch cook today. Begin planning school week. Take vitamins.' },
+  { day:6,  phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Plan month · Batch cook', what:'Plan the full 25 days ahead. Order groceries. Set homeschool materials out.' },
+  { day:7,  phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Batch film · Create', what:'Batch film 3–4 videos. Write all UGC scripts for the cycle. Brain is fresh.' },
+  { day:8,  phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Brainstorm · Scripts', what:'Write scripts, pitch emails to brands. Introduce new homeschool subjects.' },
+  { day:9,  phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'New subjects · Learn', what:'Batch film session 2. Experiments, nature walks with the girls. Confidence is up.' },
+  { day:10, phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Social · Outings', what:'Plan social outings — library, park days, co-op. Great energy for adventures.' },
+  { day:11, phase:'follicular', phaseLabel:'🌱 Follicular', color:'#8e6bbf', dotColor:'#8e6bbf', focus:'Pitch brands · Build', what:'Send brand pitches. Finalize filming day outfit and props for ovulation week.' },
+  { day:12, phase:'ovulatory', phaseLabel:'✨ Ovulatory', color:'#d4894a', dotColor:'#d4894a', focus:'Peak begins · Shine', what:'Peak energy begins. Camera-facing content only. Dress your best — you\'re magnetic.' },
+  { day:13, phase:'ovulatory', phaseLabel:'✨ Ovulatory', color:'#d4894a', dotColor:'#d4894a', focus:'Film everything · Best day', what:'Film all brand content, reviews, demos. Best filming day of the whole cycle.' },
+  { day:14, phase:'ovulatory', phaseLabel:'✨ Ovulatory', color:'#d4894a', dotColor:'#d4894a', focus:'Ovulation · Peak', what:'Ovulation day. Peak confidence. Hard homeschool concepts. Negotiate brand rates.' },
+  { day:15, phase:'ovulatory', phaseLabel:'✨ Ovulatory', color:'#d4894a', dotColor:'#d4894a', focus:'Camera content · Go live', what:'Go live. Reach out to dream brands. Take brand photos. Hard conversations ok.' },
+  { day:16, phase:'ovulatory', phaseLabel:'✨ Ovulatory', color:'#d4894a', dotColor:'#d4894a', focus:'Negotiate · Connect', what:'Last peak day. Finalize brand negotiations. Book appointments for next month.' },
+  { day:17, phase:'luteal', phaseLabel:'🍂 Early Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Edit · Deliver content', what:'Edit everything filmed in ovulation. Detail eye is sharpest. Write captions.' },
+  { day:18, phase:'luteal', phaseLabel:'🍂 Early Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Detail work · Finish', what:'Submit content to brands. Send invoices. Finalize deliverables. Wrap up units.' },
+  { day:19, phase:'luteal', phaseLabel:'🍂 Early Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Wrap units · Review', what:'Review homeschool progress. Schedule future posts. Respond to comments.' },
+  { day:20, phase:'luteal', phaseLabel:'🍂 Early Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Slow down gently', what:'Begin slowing output. Cozy homeschool mode. Voiceovers & behind-scenes content ok.' },
+  { day:21, phase:'luteal', phaseLabel:'🍂 Early Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Rest more · Cozy', what:'Rest hour is a full 60 min now. Girls time slower — audiobooks, colouring.' },
+  { day:22, phase:'luteal', phaseLabel:'🍂 Late Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'PMS care · Start magnesium', what:'START MAGNESIUM GLYCINATE TODAY. No filming, no pitches. Partner leads House Reset.' },
+  { day:23, phase:'nesting', phaseLabel:'🪺 Nesting', color:'#b8860b', dotColor:'#b8860b', focus:'🪺 Nesting Day · Deep clean', what:'Nesting surge! Deep clean kitchen, bathrooms. Kids help. Batch cook for period days.' },
+  { day:24, phase:'nesting', phaseLabel:'🪺 Nesting', color:'#b8860b', dotColor:'#b8860b', focus:'🪺 Nesting Day · Prep & stock', what:'Nesting Day 2. Prep period kit, restock supplies. Organize filming space. Film props ready.' },
+  { day:25, phase:'luteal', phaseLabel:'🍂 Late Luteal', color:'#4a9e8a', dotColor:'#4a9e8a', focus:'Rest · Period tomorrow', what:'Full rest. No commitments. Epsom bath tonight. Magnesium. Period arrives soon.' },
+];
+
+const PHASE_COLORS = {
+  menstrual: { bg:'var(--m-soft)', border:'rgba(194,24,91,0.35)', label:'#ff6b9d' },
+  follicular: { bg:'var(--f-soft)', border:'rgba(142,107,191,0.35)', label:'#c4a0ff' },
+  ovulatory:  { bg:'var(--o-soft)', border:'rgba(212,137,74,0.35)',  label:'#f4b87a' },
+  luteal:     { bg:'var(--l-soft)', border:'rgba(74,158,138,0.35)',  label:'#7dd4c0' },
+  nesting:    { bg:'var(--nest-soft)', border:'rgba(184,134,11,0.35)', label:'#e8c56a' },
+};
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+}
+
+function isSameDay(a, b) {
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+
+function runTracker() {
+  const input = document.getElementById('period-start-input').value;
+  if (!input) return;
+
+  const startDate = new Date(input + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  // Find today's cycle day
+  const dayIndex = Math.floor((today - startDate) / 86400000);
+  const todayData = (dayIndex >= 0 && dayIndex < 25) ? CYCLE_DAYS[dayIndex] : null;
+
+  // Build today banner
+  const banner = document.getElementById('today-banner');
+  const ph = todayData ? PHASE_COLORS[todayData.phase] : null;
+  if (todayData) {
+    banner.style.background = ph.bg;
+    banner.style.borderColor = ph.border;
+    document.getElementById('today-label').style.color = ph.label;
+    document.getElementById('today-day-num').textContent = 'Day ' + todayData.day;
+    document.getElementById('today-day-num').style.color = ph.label;
+    document.getElementById('today-phase-name').textContent = todayData.phaseLabel + ' · ' + todayData.focus;
+    document.getElementById('today-focus').textContent = todayData.what;
+    document.getElementById('today-date-display').textContent = formatDate(today);
+    banner.classList.add('visible');
+  } else if (dayIndex < 0) {
+    banner.style.background = 'var(--card)';
+    banner.style.borderColor = 'var(--border)';
+    document.getElementById('today-label').style.color = 'var(--muted)';
+    document.getElementById('today-day-num').textContent = 'Pre-cycle';
+    document.getElementById('today-phase-name').textContent = 'Period starts ' + formatDate(startDate);
+    document.getElementById('today-focus').textContent = 'Your cycle has not started yet based on this date.';
+    document.getElementById('today-date-display').textContent = formatDate(today);
+    banner.classList.add('visible');
+  } else {
+    // Past cycle - hide banner
+    banner.classList.remove('visible');
+  }
+
+  // Scheduling hints
+  const hints = [
+    { label:'🩸 Menstrual (Days 1–4)', days:[1,2,3,4], tip:'Rest, cozy school, iron-rich food, no filming, no pitching.' },
+    { label:'🌱 Follicular — Batch Cook (Days 5–6)', days:[5,6], tip:'Batch cook, plan month, grocery shop.' },
+    { label:'🌱 Follicular — Batch Film (Days 7–9)', days:[7,8,9], tip:'Film 3–4 videos, write scripts, pitch 3–5 brands.' },
+    { label:'✨ Ovulatory — FILM EVERYTHING (Days 12–16)', days:[12,13,14,15,16], tip:'All camera-facing content, brand calls, hard homeschool, big social.' },
+    { label:'🍂 Edit & Deliver (Days 17–19)', days:[17,18,19], tip:'Edit all footage, submit to brands, send invoices.' },
+    { label:'💊 Start Magnesium (Day 22)', days:[22], tip:'Magnesium glycinate 400mg every night from now.' },
+    { label:'🪺 Nesting Days (23–24)', days:[23,24], tip:'Deep clean, batch cook period meals, prep period kit.' },
+  ];
+
+  const hintGrid = document.getElementById('hint-grid');
+  hintGrid.innerHTML = '';
+  hints.forEach(h => {
+    const dates = h.days.map(d => {
+      const dt = addDays(startDate, d - 1);
+      return '<strong>' + formatDate(dt) + '</strong>';
+    }).join(', ');
+    hintGrid.innerHTML += `
+      <div class="hint-card">
+        <h4>${h.label}</h4>
+        <div class="hint-dates">${dates}<br>${h.tip}</div>
+      </div>`;
+  });
+  document.getElementById('schedule-hints').classList.add('visible');
+
+  // Build day list
+  const list = document.getElementById('cycle-day-list');
+  list.innerHTML = '';
+  document.getElementById('daylist-label').style.display = 'flex';
+
+  CYCLE_DAYS.forEach((cd, i) => {
+    const date = addDays(startDate, i);
+    const isToday = isSameDay(date, today);
+    const isPast = date < today && !isToday;
+    const ph2 = PHASE_COLORS[cd.phase];
+
+    const item = document.createElement('div');
+    item.className = 'cdl-item' + (isToday ? ' is-today' : '') + (isPast ? ' is-past' : '');
+
+    item.innerHTML = `
+      <div class="cdl-dot" style="background:${cd.dotColor}"></div>
+      <div class="cdl-daynum" style="color:${cd.dotColor}">D${cd.day}</div>
+      <div class="cdl-date">${formatDate(date)}</div>
+      <div class="cdl-info">
+        <div class="cdl-phase" style="color:${ph2.label}">${cd.phaseLabel}</div>
+        <div class="cdl-sub">${cd.focus}</div>
+      </div>
+      ${isToday ? '<div class="cdl-today-badge">TODAY</div>' : ''}
+    `;
+    list.appendChild(item);
+  });
+
+  // Scroll to today item
+  setTimeout(() => {
+    const todayEl = list.querySelector('.is-today');
+    if (todayEl) todayEl.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+
+  // Save to localStorage for persistence
+  try { localStorage.setItem('cycleStartDate', input); } catch(e) {}
+}
+
+// Restore saved date on load
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const saved = localStorage.getItem('cycleStartDate');
+    if (saved) {
+      document.getElementById('period-start-input').value = saved;
+    }
+  } catch(e) {}
+});
+
+// Register service worker for offline / PWA install
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
