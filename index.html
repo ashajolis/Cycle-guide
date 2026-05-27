@@ -423,6 +423,100 @@ footer{text-align:center;padding:28px 16px;font-size:0.72rem;color:var(--muted);
 }
 .hint-dates strong { color: var(--text); font-weight: 500; }
 
+/* NEXT PERIOD PREDICTION */
+.next-period-banner {
+  display: none;
+  background: linear-gradient(135deg, var(--m-soft), rgba(194,24,91,0.05));
+  border: 1px solid rgba(194,24,91,0.35);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.next-period-banner.visible { display: block; }
+.next-period-banner .np-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff6b9d;
+  margin-bottom: 6px;
+}
+.next-period-banner .np-date {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.next-period-banner .np-countdown {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.next-period-banner .np-countdown strong { color: #ff9dbf; }
+.np-row { display: flex; gap: 12px; align-items: flex-start; }
+.np-icon { font-size: 2rem; flex-shrink: 0; margin-top: 2px; }
+.np-body { flex: 1; }
+
+/* SAVED DATE CHIP */
+.saved-date-chip {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  justify-content: center;
+}
+.saved-date-chip.visible { display: flex; }
+.saved-date-chip strong { color: var(--accent); }
+.saved-date-chip .chip-clear {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+  padding: 0 4px;
+  margin-left: 4px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.saved-date-chip .chip-clear:hover { opacity: 1; }
+
+/* PREP COUNTDOWN */
+.prep-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.prep-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.prep-card .pc-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.prep-card .pc-date {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.prep-card .pc-note { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+
 </style>
 </head>
 <body>
@@ -1100,6 +1194,23 @@ footer{text-align:center;padding:28px 16px;font-size:0.72rem;color:var(--muted);
       <input type="date" id="period-start-input" />
       <button class="btn-track" onclick="runTracker()">Track My Cycle</button>
     </div>
+    <div class="saved-date-chip" id="saved-date-chip">
+      💾 Saved: <strong id="saved-date-text"></strong>
+      <button class="chip-clear" onclick="clearSavedDate()" title="Clear saved date">✕ clear</button>
+    </div>
+  </div>
+
+  <!-- NEXT PERIOD PREDICTION -->
+  <div class="next-period-banner" id="next-period-banner">
+    <div class="np-row">
+      <div class="np-icon">🩸</div>
+      <div class="np-body">
+        <div class="np-label">Next Period Expected</div>
+        <div class="np-date" id="np-date">—</div>
+        <div class="np-countdown" id="np-countdown"></div>
+      </div>
+    </div>
+    <div class="prep-cards" id="prep-cards"></div>
   </div>
 
   <div class="today-banner" id="today-banner">
@@ -1198,13 +1309,68 @@ function isSameDay(a, b) {
   return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
 }
 
+function clearSavedDate() {
+  try { localStorage.removeItem('cycleStartDate'); } catch(e) {}
+  document.getElementById('period-start-input').value = '';
+  document.getElementById('saved-date-chip').classList.remove('visible');
+  document.getElementById('next-period-banner').classList.remove('visible');
+  document.getElementById('today-banner').classList.remove('visible');
+  document.getElementById('schedule-hints').classList.remove('visible');
+  document.getElementById('daylist-label').style.display = 'none';
+  document.getElementById('cycle-day-list').innerHTML = '<div class="tracker-empty"><span class="big-icon">🌙</span>Enter your period start date above to see your cycle mapped to real dates.</div>';
+}
+
 function runTracker() {
   const input = document.getElementById('period-start-input').value;
   if (!input) return;
 
+  // Save & show saved chip
+  try { localStorage.setItem('cycleStartDate', input); } catch(e) {}
+  const chip = document.getElementById('saved-date-chip');
+  const chipText = document.getElementById('saved-date-text');
+  const savedDisplay = new Date(input + 'T00:00:00').toLocaleDateString('en-US', { weekday:'short', month:'long', day:'numeric', year:'numeric' });
+  chipText.textContent = savedDisplay;
+  chip.classList.add('visible');
+
   const startDate = new Date(input + 'T00:00:00');
   const today = new Date();
   today.setHours(0,0,0,0);
+
+  // ── NEXT PERIOD PREDICTION (cycle length = 25 days) ──
+  const nextPeriodDate = addDays(startDate, 25);
+  const daysUntilNext = Math.round((nextPeriodDate - today) / 86400000);
+  document.getElementById('np-date').textContent = nextPeriodDate.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  let countdownText = '';
+  if (daysUntilNext > 0) {
+    countdownText = `<strong>${daysUntilNext} day${daysUntilNext !== 1 ? 's' : ''} away</strong> — your next cycle begins then.`;
+  } else if (daysUntilNext === 0) {
+    countdownText = `<strong>Today!</strong> 🩸 Your next period is expected to start today.`;
+  } else {
+    countdownText = `<strong>${Math.abs(daysUntilNext)} day${Math.abs(daysUntilNext) !== 1 ? 's' : ''} ago</strong> — enter your new start date above to re-track.`;
+  }
+  document.getElementById('np-countdown').innerHTML = countdownText;
+
+  // Prep milestone cards leading up to next period
+  const prepMilestones = [
+    { label: '💊 Start Magnesium', offset: 21, note: 'Magnesium glycinate 400mg nightly from Day 22' },
+    { label: '🪺 Nesting Day 1', offset: 22, note: 'Deep clean & batch cook period meals' },
+    { label: '🪺 Nesting Day 2', offset: 23, note: 'Prep period kit & restock supplies' },
+    { label: '😴 Full Rest Day', offset: 24, note: 'No commitments · Epsom bath tonight' },
+  ];
+  const prepCards = document.getElementById('prep-cards');
+  prepCards.innerHTML = '';
+  prepMilestones.forEach(m => {
+    const d = addDays(startDate, m.offset);
+    const daysAway = Math.round((d - today) / 86400000);
+    const dayLabel = daysAway > 0 ? `in ${daysAway}d` : daysAway === 0 ? 'Today' : `${Math.abs(daysAway)}d ago`;
+    prepCards.innerHTML += `
+      <div class="prep-card">
+        <div class="pc-label">${m.label} · <span style="color:var(--accent)">${dayLabel}</span></div>
+        <div class="pc-date">${d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>
+        <div class="pc-note">${m.note}</div>
+      </div>`;
+  });
+  document.getElementById('next-period-banner').classList.add('visible');
 
   // Find today's cycle day
   const dayIndex = Math.floor((today - startDate) / 86400000);
@@ -1295,9 +1461,6 @@ function runTracker() {
     const todayEl = list.querySelector('.is-today');
     if (todayEl) todayEl.scrollIntoView({ behavior:'smooth', block:'center' });
   }, 100);
-
-  // Save to localStorage for persistence
-  try { localStorage.setItem('cycleStartDate', input); } catch(e) {}
 }
 
 // Restore saved date on load
@@ -1306,6 +1469,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('cycleStartDate');
     if (saved) {
       document.getElementById('period-start-input').value = saved;
+      // Auto-run tracker so everything is visible immediately
+      runTracker();
     }
   } catch(e) {}
 });
